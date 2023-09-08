@@ -13,7 +13,7 @@ let
     inherit version;
     pname = "rtpengine";
 
-    nativeBuildInputs = with pkgs; [ pkg-config gperf perl pandoc ];
+    nativeBuildInputs = with pkgs; [ pkg-config gperf perl pandoc makeWrapper ];
     buildInputs = with pkgs; [ openssl libmysqlclient hiredis glib json-glib zlib libpcap pcre ffmpeg-headless libopus spandsp3 libevent libwebsockets xmlrpc_c curl libxml2 iptables systemd perl ];
 
     patchPhase = ''
@@ -32,6 +32,10 @@ let
       rm $out/share/man/man1/rtpengine-ng-client.1
     '';
 
+    postFixup = ''
+      wrapProgram $out/bin/rtpengine-ctl \
+        --prefix PERL5LIB : "${with pkgs.perlPackages; makePerlPath [ ConfigTiny ]}"
+    '';
     meta = with lib; {
       description = "The Sipwise media proxy";
       homepage = "https://";
